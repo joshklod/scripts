@@ -64,7 +64,8 @@ while [ ! $exit_flag ]; do
 			eval "${REPLY:1}"
 			;;
 		*)
-			if [[ "$REPLY" =~ ^[[:blank:]]*(cd|ls|git)([[:blank:]].*)?$ ]]; then
+			if [[ "$REPLY" =~ ^[[:blank:]]*(cd|ls|(win)?git)([[:blank:]].*)?$ ]];
+			then
 				eval "$REPLY"
 			else
 				git $REPLY
