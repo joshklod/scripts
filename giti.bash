@@ -22,13 +22,13 @@ prompt() {
 		
 		if [[ "$head" = *refs/heads/* ]]; then
 			if [ $COLORS -ge 8 ]; then
-				head="${cyan}HEAD $yellow-> $bgreen${head##*/}"
+				head="${bcyan}HEAD $yellow-> $bgreen${head##*/}"
 			else
 				head="HEAD -> ${head##*/}"
 			fi
 		else
 			if [ $COLORS -ge 8 ]; then
-				head="${cyan}HEAD $yellow-> ${head:0:7}"
+				head="${bcyan}HEAD $yellow-> ${head:0:7}"
 			else
 				head="HEAD -> ${head:0:7}"
 			fi
