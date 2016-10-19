@@ -6,12 +6,12 @@
 HISTFILE="$HOME/.giti_history"
 
 # Colors
-blue="\e[34;22m"
-bgreen="\e[32;1m"
-cyan="\e[36;22m"
-bcyan="\e[36;1m"
-yellow="\e[33;22m"
-reset="\e[0m"
+  blue='\x01\e[34;22m\x02'
+bgreen='\x01\e[32;1m\x02'
+  cyan='\x01\e[36;22m\x02'
+ bcyan='\x01\e[36;1m\x02'
+yellow='\x01\e[33;22m\x02'
+ reset='\x01\e[0m\x02'
 
 # Default prompt:
 # GIT wdir (HEAD -> ...)
@@ -21,7 +21,6 @@ if [ $COLORS -ge 8 ]; then
 else
 	printf_str="\nGIT %s (%s)\n> "
 fi
-
 
 # Get current working info and print prompt
 prompt() {
@@ -50,8 +49,23 @@ prompt() {
 	printf "$printf_str" "${PWD/#$HOME/\~}" "$head"
 }
 
+commands() {
+	local aliases
+	local commandlist
+	
+	# Regenerate every loop in case aliases change
+	aliases="$(
+		git config -l |
+		sed -e '/^[\t ]*alias/!d' -e 's/alias.//' -e 's/=.*//' |
+		tr '\n' '|'
+	)"
+	
+	commandlist="$corecommands$aliases"
+	echo -n "(${commandlist%|})"
+}
+
 # Generate list of Git commands
-commands="$(
+corecommands="$(
 	find /usr/libexec/git-core -type f -name git-* -perm /111 -print0 |
 	sed -z -e "s:.*/git-::" -e "s/\.exe$//" |
 	tr '\0' '|'
@@ -62,23 +76,15 @@ history -r
 
 # Main command loop
 while [ ! $exit_flag ]; do
-	# Regenerate every loop in case aliases change
-	aliases="$(
-		git config -l |
-		sed -e '/^[\t ]*alias/!d' -e 's/alias.//' -e 's/=.*//' |
-		tr '\n' '|'
-	)"
-	commandlist="$commands$aliases"
-	commandlist="(${commandlist%|})"
-	
 	read -erp "$(prompt)"
 	history -s "$REPLY" # Add command to history
+	
 	case "$REPLY" in
 		"")   continue ;;
 		exit) exit_flag=1 ;;
 		!*) eval "${REPLY:1}" ;;
 		*)
-			if [[ "$REPLY" =~ ^[[:blank:]]*$commandlist([[:blank:]].*)?$ ]]
+			if [[ "$REPLY" =~ ^[[:blank:]]*$(commands)([[:blank:]].*)?$ ]]
 			then
 				git $REPLY
 			else
