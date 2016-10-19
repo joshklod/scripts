@@ -7,6 +7,8 @@ HISTFILE="$HOME/.giti_history"
 
 # Colors
   blue='\x01\e[34;22m\x02'
+ bblue='\x01\e[34;1m\x02'
+ green='\x01\e[32;22m\x02'
 bgreen='\x01\e[32;1m\x02'
   cyan='\x01\e[36;22m\x02'
  bcyan='\x01\e[36;1m\x02'
@@ -17,9 +19,9 @@ yellow='\x01\e[33;22m\x02'
 # GIT wdir (HEAD -> ...)
 # >
 if [ $COLORS -ge 8 ]; then
-	printf_str="\n${blue}GIT $cyan%s $yellow(%b$yellow)\n$cyan> $reset"
+	GITI_PS1="\n${green}GIT $bblue%s $yellow(%b$yellow)\n$bblue> $reset"
 else
-	printf_str="\nGIT %s (%s)\n> "
+	GITI_PS1="\nGIT %s (%s)\n> "
 fi
 
 # Get current working info and print prompt
@@ -46,7 +48,7 @@ prompt() {
 		head="Not in a Git repository"
 	fi
 	
-	printf "$printf_str" "${PWD/#$HOME/\~}" "$head"
+	printf "$GITI_PS1" "${PWD/#$HOME/\~}" "$head"
 }
 
 commands() {
