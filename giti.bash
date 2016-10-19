@@ -2,8 +2,8 @@
 #
 # giti.bash: An interactive prompt for Git
 
-# File to store command history (WIP)
-history_file="$HOME/.giti_history"
+# History file
+HISTFILE="$HOME/.giti_history"
 
 # Colors
 blue="\e[34;22m"
@@ -12,6 +12,16 @@ cyan="\e[36;22m"
 bcyan="\e[36;1m"
 yellow="\e[33;22m"
 reset="\e[0m"
+
+# Default prompt:
+# GIT wdir (HEAD -> ...)
+# >
+if [ $COLORS -ge 8 ]; then
+	printf_str="\n${blue}GIT $cyan%s $yellow(%b$yellow)\n$cyan> $reset"
+else
+	printf_str="\nGIT %s (%s)\n> "
+fi
+
 
 # Get current working info and print prompt
 prompt() {
@@ -47,17 +57,8 @@ commands="$(
 	tr '\0' '|'
 )"
 
-# Set prompt:
-# GIT wdir (HEAD -> ...)
-# >
-if [ $COLORS -ge 8 ]; then
-	printf_str="\n${blue}GIT $cyan%s $yellow(%b$yellow)\n$cyan> $reset"
-else
-	printf_str="\nGIT %s (%s)\n> "
-fi
-
-# If history file doesn't exist, create it
-[ ! -f "$history_file" ] && touch "$history_file"
+# Read history file into current session history
+history -r
 
 # Main command loop
 while [ ! $exit_flag ]; do
@@ -70,15 +71,14 @@ while [ ! $exit_flag ]; do
 	commandlist="$commands$aliases"
 	commandlist="(${commandlist%|})"
 	
-	prompt
-	
-	read -er
+	read -erp "$(prompt)"
+	history -s "$REPLY" # Add command to history
 	case "$REPLY" in
 		"")   continue ;;
 		exit) exit_flag=1 ;;
 		!*) eval "${REPLY:1}" ;;
 		*)
-			if [[ "$REPLY" =~ ^[[:blank:]]*$commandlist([[:blank:]].*)?$ ]];
+			if [[ "$REPLY" =~ ^[[:blank:]]*$commandlist([[:blank:]].*)?$ ]]
 			then
 				git $REPLY
 			else
@@ -86,3 +86,6 @@ while [ ! $exit_flag ]; do
 			fi
 	esac
 done
+
+# Write current session history to history file
+history -w
