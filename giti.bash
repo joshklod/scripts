@@ -2,8 +2,8 @@
 #
 # giti.bash: An interactive prompt for Git
 
-# History file
-HISTFILE="$HOME/.giti_history"
+# Enable alias expansion
+shopt -s expand_aliases
 
 # Colors
   blue='\x01\e[34;22m\x02'
@@ -15,13 +15,17 @@ bgreen='\x01\e[32;1m\x02'
 yellow='\x01\e[33;22m\x02'
  reset='\x01\e[0m\x02'
 
-# Default prompt:
+## Environment variable defaults
+HISTFILE="${GITI_HISTFILE:-$HOME/.giti_history}" # History file
+: ${GITI_ALIASES:=$HOME/.bash_aliases}           # User aliases file
+
+# Prompt
 # GIT wdir (HEAD -> ...)
 # >
 if [ $COLORS -ge 8 ]; then
-	GITI_PS1="\n${green}GIT $bblue%s $yellow(%b$yellow)\n$bblue> $reset"
+	: ${GITI_PS1="\n${green}GIT $bblue%s $yellow(%b$yellow)\n$bblue> $reset"}
 else
-	GITI_PS1="\nGIT %s (%s)\n> "
+	: ${GITI_PS1="\nGIT %s (%s)\n> "}
 fi
 
 # Get current working info and print prompt
@@ -33,13 +37,13 @@ prompt() {
 		
 		if [[ "$head" = *refs/heads/* ]]; then
 			if [ $COLORS -ge 8 ]; then
-				head="${bcyan}HEAD $yellow-> $bgreen${head##*/}"
+				head="${bcyan}HEAD $yellow-> $bgreen${head##*/}$reset"
 			else
 				head="HEAD -> ${head##*/}"
 			fi
 		else
 			if [ $COLORS -ge 8 ]; then
-				head="${bcyan}HEAD $yellow-> ${head:0:7}"
+				head="${bcyan}HEAD $yellow-> ${head:0:7}$reset"
 			else
 				head="HEAD -> ${head:0:7}"
 			fi
@@ -72,6 +76,9 @@ corecommands="$(
 	sed -z -e "s:.*/git-::" -e "s/\.exe$//" |
 	tr '\0' '|'
 )"
+
+# Source aliases file
+[ -f "$GITI_ALIASES" ] && source "$GITI_ALIASES"
 
 # Read history file into current session history
 history -r
