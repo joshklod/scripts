@@ -37,7 +37,7 @@ prompt() {
 		
 		if [[ "$head" = *refs/heads/* ]]; then
 			if [ $COLORS -ge 8 ]; then
-				head="${bcyan}HEAD $yellow-> $bgreen${head##*/}$reset"
+				head="${bcyan}HEAD $yellow-> $bgreen${head##*refs/heads/}$reset"
 			else
 				head="HEAD -> ${head##*/}"
 			fi
