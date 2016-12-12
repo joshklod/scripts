@@ -91,11 +91,11 @@ while [ ! $exit_flag ]; do
 	case "$REPLY" in
 		"")   continue ;;
 		exit) exit_flag=1 ;;
-		!*) eval "${REPLY:1}" ;;
+		!*)   eval "${REPLY:1}" ;;
 		*)
 			if [[ "$REPLY" =~ ^[[:blank:]]*$(commands)([[:blank:]].*)?$ ]]
 			then
-				git $REPLY
+				eval "git $REPLY"
 			else
 				eval "$REPLY"
 			fi
