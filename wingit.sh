@@ -1,10 +1,9 @@
 #!/bin/sh
 #
-# wingit.sh: Executes the Windows version of git in the appropriate
-#            environment
+# wingit.sh: A wrapper for the Windows version of git that executes in the
+#            appropriate environment
 
+# Identify Windows executable
 wingitpath="/cygdrive/c/program files/git/bin/git"
-
-[ $# -gt 0 ] && args="$@"
-
-HOME="$HOMEDRIVE$HOMEPATH" "$wingitpath" $args
+# Execute command
+HOME="$HOMEDRIVE$HOMEPATH" "$wingitpath" "$@"
