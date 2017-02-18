@@ -18,6 +18,7 @@ yellow='\x01\e[33;22m\x02'
 ## Environment variable defaults
 HISTFILE="${GITI_HISTFILE:-$HOME/.giti_history}" # History file
 : ${GITI_ALIASES:=$HOME/.bash_aliases}           # User aliases file
+: ${COLORS:=$(tput colors)}                      # TODO Make this smarter
 
 # Prompt
 # GIT wdir (HEAD -> ...)
