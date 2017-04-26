@@ -5,7 +5,7 @@
 #              properly.
 
 # Default command line options
-exe="setup-x86_64.exe"
+exe="cygwin-setup.exe"
 upgrade="--upgrade-also"
 shortcuts="--no-shortcuts"
 quiet="--package-manager"
@@ -60,7 +60,7 @@ if [ $help ]; then
 
     --exe                          The name of the setup executable. Can be a
                                    command or the path to an .exe file.
-                                   (Default: 'setup-x86_64.exe')
+                                   (Default: 'cygwin-setup.exe')
     --no-upgrade                   Disable --upgrade-also, which is set by
                                    default.
     --shortcuts                    Disable --no-shortcuts, which is set by
