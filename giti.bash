@@ -73,7 +73,7 @@ commands() {
 
 # Generate list of Git commands
 corecommands="$(
-	find /usr/libexec/git-core -type f -name git-* -perm /111 -print0 |
+	find -L "$(git --exec-path)" -type f -name git-* -perm /111 -print0 |
 	sed -z -e "s:.*/git-::" -e "s/\.exe$//" |
 	tr '\0' '|'
 )"
