@@ -11,6 +11,7 @@ shopt -s expand_aliases
 bgreen='\x01\e[32;1m\x02'
 yellow='\x01\e[33;22m\x02'
  bblue='\x01\e[34;1m\x02'
+  cyan='\x01\e[36;22m\x02'
  reset='\x01\e[0m\x02'
 
 ## Environment variable defaults
@@ -22,13 +23,38 @@ HISTFILE="${GITI_HISTFILE:-$HOME/.giti_history}" # History file
 # GIT wdir head
 # >
 if [ $COLORS -ge 8 ]; then
-	: ${GITI_PS1="\n${green}GIT $bblue%s  %b\n$bblue> $reset"}
+	: ${GITI_PS1="\n${green}GIT $bblue%s$cyan%s  %b\n$bblue> $reset"}
 else
-	: ${GITI_PS1="\nGIT %s  (%s)\n> "}
+	: ${GITI_PS1="\nGIT %s %s  (%s)\n> "}
 fi
 
-# Get current working info and print prompt
-prompt() {
+get_prefix() {
+	local prefix
+
+	if prefix="/$(git rev-parse --show-prefix 2>/dev/null)"; then
+		prefix="${prefix%/}" # Remove trailing slash
+	else
+		# Not in a git repository
+		prefix="${PWD/#$HOME/\~}" # Use working directory
+	fi
+
+	echo -n "$prefix"
+}
+
+get_root() {
+	local root
+
+	if git rev-parse 2>/dev/null; then # Are we in a repo?
+		local wdir="${PWD/#$HOME/\~}"
+		root="${wdir%$(get_prefix)}"
+	else
+		root=""
+	fi
+
+	echo -n "$root"
+}
+
+get_head() {
 	local head
 	local head_color
 
@@ -47,8 +73,13 @@ prompt() {
 	if [ $COLORS -ge 8 ]; then
 		head="$head_color$head$reset"
 	fi
-	
-	printf "$GITI_PS1" "${PWD/#$HOME/\~}" "$head"
+
+	echo -n "$head"
+}
+
+# Get current working info and print prompt
+prompt() {
+	printf "$GITI_PS1" "$(get_root)" "$(get_prefix)" "$(get_head)"
 }
 
 commands() {
