@@ -6,13 +6,12 @@
 shopt -s expand_aliases
 
 # Colors
-  blue='\x01\e[34;22m\x02'
- bblue='\x01\e[34;1m\x02'
+ faint='\x01\e[0;2m\x02'
  green='\x01\e[32;22m\x02'
 bgreen='\x01\e[32;1m\x02'
-  cyan='\x01\e[36;22m\x02'
- bcyan='\x01\e[36;1m\x02'
 yellow='\x01\e[33;22m\x02'
+ bblue='\x01\e[34;1m\x02'
+  cyan='\x01\e[36;22m\x02'
  reset='\x01\e[0m\x02'
 
 ## Environment variable defaults
@@ -21,39 +20,66 @@ HISTFILE="${GITI_HISTFILE:-$HOME/.giti_history}" # History file
 : ${COLORS:=$(tput colors)}                      # TODO Make this smarter
 
 # Prompt
-# GIT wdir (HEAD -> ...)
+# GIT wdir head
 # >
 if [ $COLORS -ge 8 ]; then
-	: ${GITI_PS1="\n${green}GIT $bblue%s $yellow(%b$yellow)\n$bblue> $reset"}
+	: ${GITI_PS1="\n${green}GIT $bblue%s$cyan%s  %b\n$bblue> $reset"}
 else
-	: ${GITI_PS1="\nGIT %s (%s)\n> "}
+	: ${GITI_PS1="\nGIT %s %s  (%s)\n> "}
 fi
 
-# Get current working info and print prompt
-prompt() {
+get_prefix() {
+	local prefix
+
+	if prefix="/$(git rev-parse --show-prefix 2>/dev/null)"; then
+		prefix="${prefix%/}" # Remove trailing slash
+	else
+		# Not in a git repository
+		prefix="${PWD/#$HOME/\~}" # Use working directory
+	fi
+
+	echo -n "$prefix"
+}
+
+get_root() {
+	local root
+
+	if git rev-parse 2>/dev/null; then # Are we in a repo?
+		local wdir="${PWD/#$HOME/\~}"
+		root="${wdir%$(get_prefix)}"
+	else
+		root=""
+	fi
+
+	echo -n "$root"
+}
+
+get_head() {
 	local head
-	
-	if [ -f .git/HEAD ]; then
-		head=$(< .git/HEAD)
-		
-		if [[ "$head" = *refs/heads/* ]]; then
-			if [ $COLORS -ge 8 ]; then
-				head="${bcyan}HEAD $yellow-> $bgreen${head##*refs/heads/}$reset"
-			else
-				head="HEAD -> ${head##*/}"
-			fi
+	local head_color
+
+	if git rev-parse 2>/dev/null; then # Are we in a repo?
+		if head="$(git symbolic-ref --short -q HEAD)"; then # Are we on a branch?
+			head_color="$bgreen"
 		else
-			if [ $COLORS -ge 8 ]; then
-				head="${bcyan}HEAD $yellow-> ${head:0:7}$reset"
-			else
-				head="HEAD -> ${head:0:7}"
-			fi
+			head="$(git rev-parse --short HEAD)" # Use abbreviated SHA-1 of commit
+			head_color="$yellow"
 		fi
 	else
 		head="Not in a Git repository"
+		head_color="$faint"
 	fi
-	
-	printf "$GITI_PS1" "${PWD/#$HOME/\~}" "$head"
+
+	if [ $COLORS -ge 8 ]; then
+		head="$head_color$head$reset"
+	fi
+
+	echo -n "$head"
+}
+
+# Get current working info and print prompt
+prompt() {
+	printf "$GITI_PS1" "$(get_root)" "$(get_prefix)" "$(get_head)"
 }
 
 commands() {
