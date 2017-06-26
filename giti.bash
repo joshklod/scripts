@@ -31,15 +31,12 @@ fi
 prompt() {
 	local head
 	local head_color
-	
-	if [ -f .git/HEAD ]; then
-		head=$(< .git/HEAD)
-		
-		if [[ "$head" = *refs/heads/* ]]; then
-			head="${head##*refs/heads/}"
+
+	if git rev-parse 2>/dev/null; then # Are we in a repo?
+		if head="$(git symbolic-ref --short -q HEAD)"; then # Are we on a branch?
 			head_color="$bgreen"
 		else
-			head="${head:0:7}"
+			head="$(git rev-parse --short HEAD)" # Use abbreviated SHA-1 of commit
 			head_color="$yellow"
 		fi
 	else
