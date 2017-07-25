@@ -8,8 +8,10 @@ case "$1" in
 		for y in $(seq 0 2 $res); do
 			echo
 
-			if [ $y -ge $res ]; then g=255
-			else                     g=$(($y*256/$res))
+			g=$(($y*256/$res))
+
+			if   [ $g -lt   0 ]; then g=0
+			elif [ $g -gt 255 ]; then g=255
 			fi
 
 			for x in $(seq 0 $res2); do
@@ -19,10 +21,18 @@ case "$1" in
 				else                         r=$((512 - $xy*256/$res))
 				fi
 
+				if   [ $r -lt   0 ]; then r=0
+				elif [ $r -gt 255 ]; then r=255
+				fi
+
 				xy=$(($x + ($res - $y)))
 				if   [ $xy -le $res ];  then b=0
 				elif [ $xy -ge $res2 ]; then b=255
 				else                         b=$(($xy*256/$res - 256))
+				fi
+
+				if   [ $b -lt   0 ]; then b=0
+				elif [ $b -gt 255 ]; then b=255
 				fi
 
 				echo -en "\e[48;2;$r;$g;${b}m \e[0m"
