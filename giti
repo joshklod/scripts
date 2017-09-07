@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# giti.bash: An interactive prompt for Git
+# giti: An interactive prompt for Git
 
 # Enable alias expansion
 shopt -s expand_aliases
