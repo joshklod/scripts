@@ -1,8 +1,8 @@
 #!/bin/bash
 #
-# log.bash: Run command with output redirected to logfile
+# log: Run command with output redirected to logfile
 
-version='0.9'
+version='0.10'
 
 # Default mode
 mode="stdout"
@@ -14,7 +14,7 @@ mode="stdout"
 
 function show-help {
 	echo -n "
-log.bash v$version
+log v$version
 Run command with output redirected to logfile
 
   Usage: log [options] <command> [args]
