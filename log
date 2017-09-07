@@ -1,16 +1,17 @@
 #!/bin/bash
 #
 # log: Run command with output redirected to logfile
+#
+# TODO: Check for unwritable directory or file
+#       Strip trailing slash from user $LOGDIR
 
-version='0.10'
+version='0.11'
 
 # Default mode
 mode="stdout"
 
 # Default directory to contain logfile
 [ -z "$LOGDIR" ] && LOGDIR="$HOME/.logs"
-# Create directory if it does not exist, or default to $HOME
-[ ! -d "$LOGDIR" ] && { mkdir "$LOGDIR" || LOGDIR="$HOME"; }
 
 function show-help {
 	echo -n "
@@ -42,6 +43,9 @@ while [[ $1 == -* ]]; do
 	esac
 	shift
 done
+
+# Create directory if it does not exist, or default to $HOME
+[ ! -d "$LOGDIR" ] && { mkdir "$LOGDIR" || LOGDIR="$HOME"; }
 
 # Name of logfile is name of command
 logfile="$LOGDIR/${1##*/}.log";
