@@ -1,8 +1,8 @@
 #!/bin/sh
 #
-# cygsetup.sh: A wrapper for Cygwin's setup-*.exe, which adds some default
-#              settings and allows command line options to be overridden
-#              properly.
+# cygsetup: A wrapper for Cygwin's setup-*.exe, which adds some default
+#           settings and allows command line options to be overridden
+#           properly.
 
 # Default command line options
 exe="cygwin-setup.exe"
