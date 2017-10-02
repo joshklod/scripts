@@ -1,38 +1,40 @@
 #!/bin/bash
 
-res=38
-res2=$((2*$res))
-
 case "$1" in
 	-24 | --24 )
-		for y in $(seq 0 2 $res); do
+		if command -v tput >/dev/null 2>&1; then
+			lines=$(tput lines)
+			cols=$(tput cols)
+		else
+			lines=24
+			cols=80
+		fi
+
+		resx=$(($cols-2))
+		resy=$(($lines-8))
+		if [[ $resy -gt $(($resx/2)) ]]; then
+			resy=$((resx/2))
+		fi
+
+		for y in $(seq 0 $resy); do
 			echo
+			y_scaled=$(( $y*255/$resy ))
 
-			g=$(($y*256/$res))
+			b=$y_scaled
 
-			if   [ $g -lt   0 ]; then g=0
-			elif [ $g -gt 255 ]; then g=255
-			fi
+			for x in $(seq 0 $resx); do
+				x_scaled=$(( $x*511/$resx ))
 
-			for x in $(seq 0 $res2); do
-				xy=$(($x + $y))
-				if   [ $xy -le $res ];  then r=255
-				elif [ $xy -ge $res2 ]; then r=0
-				else                         r=$((512 - $xy*256/$res))
+				xy=$(($x_scaled + $y_scaled))
+				if   [ $xy -le 255 ]; then r=255
+				elif [ $xy -ge 511 ]; then r=0
+				else                       r=$((511 - $xy))
 				fi
 
-				if   [ $r -lt   0 ]; then r=0
-				elif [ $r -gt 255 ]; then r=255
-				fi
-
-				xy=$(($x + ($res - $y)))
-				if   [ $xy -le $res ];  then b=0
-				elif [ $xy -ge $res2 ]; then b=255
-				else                         b=$(($xy*256/$res - 256))
-				fi
-
-				if   [ $b -lt   0 ]; then b=0
-				elif [ $b -gt 255 ]; then b=255
+				xy=$(( $x_scaled + (255 - $y_scaled) ))
+				if   [ $xy -le 255 ]; then g=0
+				elif [ $xy -ge 511 ]; then g=255
+				else                       g=$(($xy - 255))
 				fi
 
 				echo -en "\e[48;2;$r;$g;${b}m \e[0m"
