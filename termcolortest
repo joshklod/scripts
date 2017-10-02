@@ -12,8 +12,8 @@ case "$1" in
 
 		resx=$(($cols-2))
 		resy=$(($lines-8))
-		if [[ $resy -gt $(($resx/2)) ]]; then
-			resy=$((resx/2))
+		if [[ $resy -gt $(($resx/3)) ]]; then
+			resy=$((resx/3))
 		fi
 
 		for y in $(seq 0 $resy); do
