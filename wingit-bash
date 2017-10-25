@@ -1,0 +1,9 @@
+#!/bin/sh
+#
+# wingit-bash: A wrapper for Windows git-bash that executes in the appropriate
+#              environment
+
+# Identify Windows executable
+gitbashpath="/cygdrive/c/program files/git/git-bash"
+# Execute command
+HOME="$HOMEDRIVE$HOMEPATH" "$gitbashpath" "$@"
