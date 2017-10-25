@@ -1,6 +1,8 @@
 #!/bin/bash
 #
 # giti: An interactive prompt for Git
+#
+# TODO: Path wrong when in symlink to repo
 
 # Enable alias expansion
 shopt -s expand_aliases
@@ -97,6 +99,16 @@ commands() {
 	echo -n "(${commandlist%|})"
 }
 
+# Process command-line args
+if [ $# -gt 0 ]; then
+	if [ -d "$1" ]; then
+		start_dir="$1"
+	else
+		echo "Error: '$1' is not a directory" >&2
+		exit 1
+	fi
+fi
+
 # Generate list of Git commands
 corecommands="$(
 	find -L "$(git --exec-path)" -type f -name git-* -perm /111 -print0 |
@@ -106,6 +118,9 @@ corecommands="$(
 
 # Source aliases file
 [ -f "$GITI_ALIASES" ] && source "$GITI_ALIASES"
+
+# Start in directory if argument is given
+[ -n "$start_dir" ] && cd "$start_dir"
 
 # Read history file into current session history
 history -r

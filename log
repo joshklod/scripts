@@ -5,7 +5,7 @@
 # TODO: Check for unwritable directory or file
 #       Strip trailing slash from user $LOGDIR
 
-version='0.11'
+version='0.12'
 
 # Default mode
 mode="stdout"
@@ -14,7 +14,7 @@ mode="stdout"
 [ -z "$LOGDIR" ] && LOGDIR="$HOME/.logs"
 
 function show-help {
-	echo -n "
+	echo -n "\
 log v$version
 Run command with output redirected to logfile
 
