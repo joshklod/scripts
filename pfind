@@ -1,0 +1,8 @@
+#!/bin/bash
+#
+# pfind - Prettier than find
+
+version='1.0'
+
+mapfile -t files < <(find "$@")
+ls -aldh --color=auto "${files[@]}"
