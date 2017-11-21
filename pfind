@@ -2,11 +2,24 @@
 #
 # pfind - Prettier than find
 
-version='1.1'
+version='1.2'
 
-myname=$(basename "$0")
+# Get execution name of script
+exec_name() {
+	local name=$1
+	local basename=$(basename "$name")
+	mapfile -td: path < <(printf "$PATH")
+	for dir in "${path[@]}"; do
+		if [[ $name == $dir/$basename ]]; then
+			name=$basename
+			break
+		fi
+	done
+	printf "$name"
+}
 
 show_help() {
+	local myname=$(exec_name "$0")
 	echo -n "\
 pfind v$version
 Prettier than find
