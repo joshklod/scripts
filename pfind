@@ -2,7 +2,7 @@
 #
 # pfind - Prettier than find
 
-version='1.2'
+version='1.3'
 
 # Get execution name of script
 exec_name() {
@@ -19,12 +19,11 @@ exec_name() {
 }
 
 show_help() {
-	local myname=$(exec_name "$0")
-	echo -n "\
+	printf "\
 pfind v$version
 Prettier than find
 
-  Usage: $myname [find-options] [starting-point...] [expression]
+  Usage: $(exec_name "$0") [options] [starting-point...] [expression]
 "'
 Arguments are identical to those of `find`.  See `man find`, `info find`, or
 `find -h` for details.
