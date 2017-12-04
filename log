@@ -65,4 +65,6 @@ echo -e "Writing to $logfile...\n"
 	esac
 	# Timestamp end of program execution
 	echo -e "\n######## Program Terminated $(date) ########\n" >> "$logfile"
+
+	# TODO Truncate file
 } &
