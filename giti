@@ -146,3 +146,4 @@ done
 
 # Write current session history to history file
 history -w
+# TODO Truncate history file

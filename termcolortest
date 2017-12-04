@@ -1,7 +1,7 @@
 #!/bin/bash
 
 case "$1" in
-	-24 | --24 )
+	24 | -24 | --24 )
 		if command -v tput >/dev/null 2>&1; then
 			lines=$(tput lines)
 			cols=$(tput cols)
@@ -43,28 +43,15 @@ case "$1" in
 		echo
 		;;
 
-	-256 | --256 )
-		for color1 in 0 8; do
-			echo
-			for color2 in $(seq 0 7); do
-				color=$((color1 + color2))
-				echo -en "\e[48;5;${color}m  \e[0m"
-			done
-		done
-		echo
-
-		for color1 in $(seq 16 36 196); do
-			echo
-			for color2 in $(seq 0 35); do
-				color=$((color1 + color2))
-				echo -en "\e[48;5;${color}m  \e[0m"
-			done
-		done
-		echo
-
-		echo
-		for color in $(seq 232 255); do
-			echo -en "\e[48;5;${color}m  \e[0m"
+	256 | -256 | --256 )
+		for color in $(seq 0 255); do
+			case $color in
+				0|16|232) echo # Add blank line at start of each section
+			esac
+			echo -en "\e[48;5;${color}m  "
+			case $color in
+				7|15|51|87|123|159|195|231|255) echo -e "\e[0m" # End of line
+			esac
 		done
 		echo
 		;;
