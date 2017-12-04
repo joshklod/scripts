@@ -9,7 +9,7 @@ exe="cygwin-setup.exe"
 upgrade="--upgrade-also"
 shortcuts="--no-shortcuts"
 quiet="--package-manager"
-defsites="http://cygwin.mirror.constant.com http://cygwin.refractal.net"
+defsites="http://cygwin.mirror.constant.com"
 
 # Read command line options
 while [ $# -gt 0 ]; do
