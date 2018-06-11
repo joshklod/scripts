@@ -2,7 +2,7 @@
 #
 # pfind - Prettier than find
 
-version='1.4'
+version='1.5'
 
 # Get execution name of script
 exec_name() {
@@ -40,5 +40,4 @@ while [[ $1 == -* ]]; do
 	shift
 done
 
-mapfile -t files < <(find "$@")
-ls -aldh --color=auto "${files[@]}"
+find "$@" -print0 | xargs -0 -- ls -aldh --color=auto --
