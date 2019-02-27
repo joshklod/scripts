@@ -65,6 +65,10 @@ case "$1" in
 		echo
 		;;
 
+	all | -all | --all )
+		"$0" 16 && "$0" 256 && "$0" 24
+		;;
+
 	*)
 		for fg in 9 $(seq 0 7); do
 			for bold in 1 22 2; do
