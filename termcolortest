@@ -55,6 +55,16 @@ case "$1" in
 		done
 		;;
 
+	16 | -16 | --16 )
+		for bold in 4 10; do
+			echo -e "\e[0m"
+			for color in $(seq 0 7); do
+				echo -en "\e[${bold}${color}m  \e[0m"
+			done
+		done
+		echo
+		;;
+
 	*)
 		for fg in 9 $(seq 0 7); do
 			for bold in 1 22 2; do
