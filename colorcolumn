@@ -1,6 +1,6 @@
 #!/usr/bin/awk -f
 #
-# colorcolumn - Like `column`, but works with ANSI colors
+# colorcolumn - Like `column`, but works with ANSI control sequences
 #
 # Based on this Stack Exchange answer by Stephane Chazelas:
 #     https://unix.stackexchange.com/a/121139/259233
@@ -9,7 +9,7 @@
 	nf[NR]=NF
 	for (i = 1; i <= NF; i++) {
 		cell[NR,i] = $i
-		gsub(/\033\[([[:digit:]]+(;[[:digit:]]+)*)?[mK]/, "", $i)
+		gsub(/\033\[[0-?]*[ -/]*[@-~]/, "", $i)
 		len[NR,i] = l = length($i)
 		if (l > max[i]) max[i] = l
 	}
