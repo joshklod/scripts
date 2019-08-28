@@ -1,0 +1,6 @@
+#!/bin/sh
+
+tree=${1:-.}
+
+cd `git rev-parse --show-toplevel`
+ls "$tree"
