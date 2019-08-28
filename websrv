@@ -1,0 +1,43 @@
+#!/bin/bash
+
+trap 'exit 0' INT
+
+trap cleanup EXIT
+cleanup() {
+	echo "Cleaning up..."
+	ps
+	kill -INT $pid_nc
+	rm -f nc_in nc_out
+}
+
+default_file='index.html'
+
+mkfifo nc_in nc_out
+
+nc -l 5678 < nc_out > nc_in &
+pid_nc=$!
+printf "$pid_nc\n"
+
+echo Entering loop...
+while true; do
+	echo Starting loop...
+	while read -r; do
+		printf "Reply: '%s'\n" "$REPLY"
+		line=$(tr -d '\r\n' <<< "$REPLY")
+		printf "Line:  '%s'\n" "$line"
+		file=$(echo "$line" | sed -En 's:^GET /([[:graph:]]*).*$:\1:p')
+		file=${file:-$default_file}
+	done < nc_in
+	{
+		echo "start"
+		printf "%s" "\
+HTTP/1.1 200 OK
+Date: $(date)
+
+"
+		cat "$@"
+		printf "\n"
+		echo "end"
+	}
+	#} | nc -l 5678
+done
