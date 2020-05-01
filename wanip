@@ -36,7 +36,7 @@ while [ $# -gt 0 ]; do
 		-v | --verbose ) verbose=true ;;
 		-h | --help    ) show_help    ;;
 		* )
-			print "Unknown option '$1' (Try 'wanip --help')" >&2
+			print >&2 "Unknown option '$1' (Try 'wanip --help')"
 			exit 1
 			;;
 	esac
@@ -45,7 +45,7 @@ done
 
 if [ -n "$use" ]; then
 	iscommand "$use" || {
-		print "Error: $use is not installed" >&2
+		print >&2 "Error: $use is not installed"
 		exit 2
 	}
 else
@@ -54,12 +54,12 @@ else
 	elif iscommand curl; then
 		use=curl
 	else
-		print "Error: Install either dig or curl" >&2
+		print >&2 "Error: Install either dig or curl"
 		exit 2
 	fi
 fi
 
-[ -n "$verbose" ] && print "Using $use..." >&2
+[ -n "$verbose" ] && print >&2 "Using $use..."
 
 case "$use" in
 dig)
@@ -67,7 +67,7 @@ dig)
 curl)
 	curl http://whatismyip.akamai.com/ && print || exit 1 ;;
 *)
-	print "Error: Unknown internal error occurred" >&2
+	print >&2 "Error: Unknown internal error occurred"
 	exit 99
 	;;
 esac
