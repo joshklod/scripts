@@ -12,18 +12,24 @@ show_help() {
 wanip v$version
 Print the system's Internet-visible IP address to stdout
 
-  Usage: wanip [-v|-h]
+  Usage: wanip [-c|-d|-v|-h] ...
 
 Options:
+  -c | --curl      Always use curl
+  -d | --dig       Always use dig
   -v | --verbose   Show more information on stderr
   -h | --help      Show this help info
 "
 	exit 0
 }
 
+use=''
+
 # Process commandline args
 while [ $# -gt 0 ]; do
 	case "$1" in
+		-c | --curl    ) use=curl     ;;
+		-d | --dig     ) use=dig      ;;
 		-v | --verbose ) verbose=true ;;
 		-h | --help    ) show_help    ;;
 		* )
@@ -34,13 +40,29 @@ while [ $# -gt 0 ]; do
 	shift
 done
 
-if iscommand dig; then
+if [ -n "$use" ]; then
+	iscommand "$use" || {
+		echo "Error: $use is not installed" >&2
+		exit 2
+	}
+else
+	if iscommand dig; then
+		use=dig
+	elif iscommand curl; then
+		use=curl
+	else
+		echo "Error: Install either dig or curl" >&2
+		exit 2
+	fi
+fi
+
+if [ "$use" = 'dig' ]; then
 	[ -n "$verbose" ] && echo "Using dig..." >&2
 	dig +short myip.opendns.com @resolver1.opendns.com || exit 1
-elif iscommand curl; then
+elif [ "$use" = 'curl' ]; then
 	[ -n "$verbose" ] && echo "Using curl..." >&2
 	curl http://whatismyip.akamai.com/ && echo || exit 1
 else
-	echo "Error: Install either dig or curl" >&2
-	exit 2
+	echo "Error: Unknown internal error occurred" >&2
+	exit 99
 fi
