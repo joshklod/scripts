@@ -58,7 +58,7 @@ fi
 
 if [ "$use" = 'dig' ]; then
 	[ -n "$verbose" ] && echo "Using dig..." >&2
-	dig +short myip.opendns.com @resolver1.opendns.com || exit 1
+	dig @resolver1.opendns.com myip.opendns.com ANY +short +notcp || exit 1
 elif [ "$use" = 'curl' ]; then
 	[ -n "$verbose" ] && echo "Using curl..." >&2
 	curl http://whatismyip.akamai.com/ && echo || exit 1
