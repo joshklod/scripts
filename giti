@@ -4,6 +4,8 @@
 #
 # TODO: Path wrong when in symlink to repo
 
+set -o errexit
+
 # Force script to run in interactive mode
 [[ "$-" != *i* ]] && exec /bin/bash -i "$0" "$@"
 
@@ -128,6 +130,9 @@ corecommands="$(
 # Read history file into current session history
 history -c # Clear history before reading
 history -r
+
+# Set interactive options
+set +o errexit
 
 # Main command loop
 while [ ! $exit_flag ]; do
