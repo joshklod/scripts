@@ -22,7 +22,7 @@ yellow='\x01\e[33;22m\x02'
  reset='\x01\e[0m\x02'
 
 ## Environment variable defaults
-HISTFILE="${GITI_HISTFILE:-$HOME/.giti_history}" # History file
+: ${GITI_HISTFILE:=$HOME/.giti_history}          # History file
 : ${GITI_ALIASES:=$HOME/.bash_aliases}           # User aliases file
 : ${COLORS:=$(tput colors)}                      # TODO Make this smarter
 
@@ -128,6 +128,7 @@ corecommands="$(
 [ -n "$start_dir" ] && cd "$start_dir"
 
 # Read history file into current session history
+HISTFILE=$GITI_HISTFILE
 history -c # Clear history before reading
 history -r
 
