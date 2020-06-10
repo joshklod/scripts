@@ -4,8 +4,11 @@
 #
 # TODO: Path wrong when in symlink to repo
 
-# Enable alias expansion
-shopt -s expand_aliases
+# Force script to run in interactive mode
+[[ "$-" != *i* ]] && exec /bin/bash -i "$0" "$@"
+
+# Disable interactive command history (handled manually)
+set +o history
 
 # Colors
  faint='\x01\e[0;2m\x02'
@@ -123,6 +126,7 @@ corecommands="$(
 [ -n "$start_dir" ] && cd "$start_dir"
 
 # Read history file into current session history
+history -c # Clear history before reading
 history -r
 
 # Main command loop
