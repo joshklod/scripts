@@ -1,0 +1,15 @@
+#!/bin/sh
+
+set -o errexit
+
+path=$1
+
+dir=$path.d
+mkdir -p "$dir"
+
+git rev-list --all --objects -- "$path" |
+grep "$path" |
+while read -r hash name; do
+	git cat-file -p "$hash" \
+		> "$dir/$hash$(basename "$path" | sed -e '/\./!d' -e 's/.*\././')"
+done
