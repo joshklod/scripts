@@ -1,0 +1,26 @@
+#!/bin/sh
+#
+# filtergcc - Filter to colorize gcc output
+
+: ${GCC_COLORS='error=01;31:warning=01;35:note=01;36:locus=01:quote=01'}
+reset=$(tput sgr0)
+
+parse_colors () {
+	local IFS=:
+	set -- $GCC_COLORS
+	IFS='='
+	for assignment in "$@"; do
+		set -- $assignment
+		type=$1
+		[ -z $type ] && continue
+		shift
+		string=$*
+		eval "$(printf "%s='\e[%sm'" "$type" "$string")"
+	done
+}
+parse_colors
+
+sed \
+	-e "s/error/$error\0$reset/g" \
+	-e "s/warning/$warning\0$reset/g" \
+	-e "s/note/$note\0$reset/g"
