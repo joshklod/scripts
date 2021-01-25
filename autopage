@@ -16,6 +16,7 @@ prints () {
 	printf '%s\n' "$*"
 }
 
+# Environment variable defaults
 : ${AUTOPAGE_CUTOFF:=80%}
 if [ -z "$AUTOPAGE_PAGER" ]; then
 	case "$PAGER" in
@@ -24,6 +25,7 @@ if [ -z "$AUTOPAGE_PAGER" ]; then
 	AUTOPAGE_PAGER=${PAGER:-'less -+FX'}
 fi
 
+# Environment variable validation
 if ! expr "$AUTOPAGE_CUTOFF" : '^[0-9]\+%\?$' >/dev/null; then
 	prints >&2 'Error: $AUTOPAGE_CUTOFF must be a number or percentage'
 	exit 1
