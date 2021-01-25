@@ -51,7 +51,7 @@ while read -r; do
 done
 
 if [ $count -gt "$cutoff" ]; then
-	cat "$buffer" - | sh -c "$AUTOPAGE_PAGER"
+	cat "$buffer" - | sh -c "$AUTOPAGE_PAGER"' "$@"' autopage-sh "$@"
 else
 	cat "$buffer"
 fi
