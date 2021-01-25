@@ -28,6 +28,11 @@ if ! expr "$AUTOPAGE_CUTOFF" : '^[0-9]\+%\?$' >/dev/null; then
 	prints >&2 'Error: $AUTOPAGE_CUTOFF must be a number or percentage'
 	exit 1
 fi
+case "$AUTOPAGE_PAGER" in
+	autopage*)
+		prints >&2 'Error: $AUTOPAGE_PAGER cannot recursively run autopage'
+		exit 1
+esac
 
 case "$AUTOPAGE_CUTOFF" in
 	*%) cutoff=$(($(tput lines)*$(expr "$AUTOPAGE_CUTOFF" : '\(.*\)%')/100)) ;;
