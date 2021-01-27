@@ -44,7 +44,7 @@ esac
 buffer=$(mktemp)
 
 count=0
-while read -r; do
+while IFS= read -r REPLY; do
 	printf '%s\n' "$REPLY" >> "$buffer"
 	count=$(($count + 1))
 	[ $count -gt "$cutoff" ] && break
