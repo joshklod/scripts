@@ -1,0 +1,74 @@
+#!/bin/sh
+
+set -o errexit
+
+remote_name=transfer
+remote_root=/mnt/public/JKlodnicki/Backups/Transfer/git
+
+if [ $# -eq 0 ]; then
+	set -- .
+fi
+
+# Portable version of `echo`
+prints () {
+	printf '%s\n' "$*"
+}
+export -f prints
+
+find_all_repos() {
+	for dir in "$@"; do
+		[ ! -d "$dir" ] && continue
+		if git -C "$dir" rev-parse 2>/dev/null; then # $dir is a git repo
+			realpath -sz --relative-to=. "$dir"
+			git -C "$dir" submodule foreach --quiet --recursive \
+					'printf "%s/%s\0" "'"$dir"'" "$sm_path"' |
+				xargs -0r realpath -sz --relative-to=.
+		else
+			find -L "$dir" -mindepth 1 -maxdepth 1 \
+				-name node_modules -prune -o -type d \
+				-exec sh -c 'find_all_repos "$@"' _ '{}' +
+		fi
+	done
+}
+export -f find_all_repos
+
+lf='
+'
+
+find_all_repos "$@" |
+while IFS= read -rd '' repo; do (
+	prints "Backing up '$repo'..."
+	cd "$repo"
+
+	if ! remote_url=$(git config "remote.$remote_name.url"); then
+		remote_url="$remote_root/$repo/data.git"
+		git remote add --mirror=push "$remote_name" "$remote_url"
+	fi
+
+	if ! git -C "$remote_url" rev-parse 2>/dev/null; then
+		mkdir -p "$remote_url"
+		git -C "$remote_url" init --bare
+	fi
+
+	git push "$remote_name"
+
+	git_dir=$(git rev-parse --git-dir)
+
+	git submodule foreach --quiet 'printf "%s\0" "$sm_path"' |
+		xargs -0 sh -c \
+			'printf "%s\0" . | exclude-dirs-newer "$@"' _ "$git_dir" |
+		xargs -0 printf '%s\n' 'Need dirs:'
+
+	cd "$git_dir"
+	{
+		printf '%s\0' '.'
+		[ -d 'modules' ] && find 'modules' -mindepth 1 -maxdepth 1 -print0
+	} | while IFS= read -rd '' dir; do
+		remote_dir="$remote_root/$repo/meta/$dir"
+		mkdir -p "$remote_dir"
+		find "$dir" -mindepth 1 -maxdepth 1 \
+			-not \( -name objects -o -name refs -o -name modules \) \
+			-execdir echo cp -ru -t "$remote_dir" {} + \
+			-execdir cp -ru -t "$remote_dir" {} +
+	done
+) || printf >&2 'Error: %d\n' "$?"; done
