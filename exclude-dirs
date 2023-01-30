@@ -1,0 +1,23 @@
+#!/bin/bash
+
+set -o errexit
+
+positive="$1"
+shift
+
+pos=$(realpath -sm "$positive")
+for _ in "$@"; do
+	neg=$(realpath -sm "$1")
+	shift
+	if [ "$pos" = "$neg" ]; then
+		exit
+	elif [[ -d $pos && $neg =~ ^$pos/ ]]; then
+		set -- "$@" "$neg"
+	fi
+done
+
+if [ $# -eq 0 ]; then
+	printf '%s\0' "$positive"
+else
+	find "$positive" -mindepth 1 -maxdepth 1 -exec "$0" {} "$@" \;
+fi
