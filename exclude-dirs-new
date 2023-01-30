@@ -1,0 +1,36 @@
+#!/bin/bash
+
+set -o errexit
+
+positive="$1"
+shift
+for _ in "$@"; do
+	set -- "$@" "$(realpath -sm "$1")"
+	shift
+done
+
+dewit() {
+	positive="$1"
+	shift
+
+	pos=$(realpath -sm "$positive")
+	for neg in "$@"; do
+		if [ "$pos" = "$neg" ]; then
+			return
+		elif [[ -d $pos && $neg =~ ^$pos/ ]]; then
+			set -- "$@" "$neg"
+		fi
+		shift
+	done
+
+	if [ $# -eq 0 ]; then
+		printf '%s\0' "$positive"
+	else
+		find "$positive" -mindepth 1 -maxdepth 1 -print0 |
+		while IFS= read -rd '' path; do
+			dewit "$path" "$@"
+		done
+	fi
+}
+
+dewit "$positive" "$@"
