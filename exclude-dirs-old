@@ -1,0 +1,31 @@
+#!/bin/bash
+
+set -o errexit
+
+set -- "${@%%/}" # Strip trailing slashes
+
+positive=( "$1" )
+shift
+negative=( "$@" )
+
+while [ ${#positive[@]} -gt 0 ]; do
+	unset pos_next
+	for pos in "${positive[@]}"; do
+		found='false'
+		for neg in "${negative[@]}"; do
+			if [ "$pos" = "$neg" ]; then
+				found='true'
+				break
+			elif [[ -d $pos && $neg =~ ^$pos/ ]]; then
+				mapfile -d '' -O ${#pos_next[@]} pos_next < \
+					<(find "$pos" -mindepth 1 -maxdepth 1 -print0)
+				found='true'
+				break
+			fi
+		done
+		if [ "$found" = 'false' ]; then
+			printf '%s\0' "$pos"
+		fi
+	done
+	positive=( "${pos_next[@]}" )
+done
