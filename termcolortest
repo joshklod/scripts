@@ -38,6 +38,12 @@ case "$1" in
 			cols=80
 		fi
 
+		if tput setrgbb >/dev/null 2>&1; then
+			setrgbb=$(tput setrgbb | sed 's/%p.%d/%s/g')
+		else
+			setrgbb='\e[48;2;%s;%s;%sm'
+		fi
+
 		resx=$(($cols-2))
 		resy=$(($lines-8))
 		if [[ $resy -gt $(($resx/3)) ]]; then
@@ -65,7 +71,7 @@ case "$1" in
 				else                       g=$(($xy - 255))
 				fi
 
-				echo -en "\e[48;2;$r;$g;${b}m "
+				printf "$setrgbb " $r $g $b
 			done
 			echo -e "\e[0m" # End of line
 		done
