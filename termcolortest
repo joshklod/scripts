@@ -44,8 +44,8 @@ case "$1" in
 			resy=$((resx/3))
 		fi
 
+		echo
 		for y in $(seq 0 $resy); do
-			echo
 			y_scaled=$(( $y*255/$resy ))
 
 			b=$y_scaled
@@ -65,10 +65,10 @@ case "$1" in
 				else                       g=$(($xy - 255))
 				fi
 
-				echo -en "\e[48;2;$r;$g;${b}m \e[0m"
+				echo -en "\e[48;2;$r;$g;${b}m "
 			done
+			echo -e "\e[0m" # End of line
 		done
-		echo
 		;;
 
 	256 | -256 | --256 )
