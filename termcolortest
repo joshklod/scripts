@@ -1,6 +1,34 @@
 #!/bin/bash
 
 case "$1" in
+	direct | -direct | --direct )
+		if command -v tput >/dev/null 2>&1; then
+			cols=$(tput cols)
+		else
+			cols=80
+		fi
+
+		resx=$(($cols-4))
+		[ $resx -gt 255 ] && resx=255
+
+		for c in r g b y m c w; do
+			case $c in
+				r) idx=1; i=65536 ;;
+				g) idx=2; i=256 ;;
+				y) idx=3; i=$((65536 + 256)) ;;
+				b) idx=4; i=1 ;;
+				m) idx=5; i=$((65536 + 1)) ;;
+				c) idx=6; i=$((256 + 1)) ;;
+				w) idx=7; i=$((65536 + 256 + 1)) ;;
+			esac
+			printf "%s " "$(tput setab 0)"
+			for v in $(seq 0 $resx); do
+				printf "%s " "$(tput setab $(( $i*($v*255/$resx) )))"
+			done
+			printf "%s " "$(tput setab $idx)"
+			echo -e "\e[0m" # End of line
+		done
+		;;
 	24 | -24 | --24 )
 		if command -v tput >/dev/null 2>&1; then
 			lines=$(tput lines)
