@@ -1,0 +1,28 @@
+#!/bin/sh
+#
+# objdump-all - Dump/disassemble all sections of object file
+
+set -o errexit
+
+# Environment variable defaults
+: ${CROSS_COMPILE=''}
+
+if [ $# -ge 1 ]; then
+	if [ -n "$1" ]; then
+		CROSS_COMPILE="$1-"
+	fi
+	shift
+fi
+
+${CROSS_COMPILE}objdump --wide --headers "$@" |
+sed 's/,\s\+/,/g' |
+awk '$1 ~ /^[[:digit:]]+$/ && $8 ~ /\<LOAD\>/ {
+	print $2, ($8 ~ /\<CODE\>/) ? "CODE" : ""
+}' |
+while read -r section is_code; do
+	if [ -n "$is_code" ]; then
+		${CROSS_COMPILE}objdump --section="$section" --disassemble "$@"
+	else
+		${CROSS_COMPILE}objdump --section="$section" --full-contents "$@"
+	fi
+done
