@@ -130,7 +130,7 @@ corecommands="$(
 # Read history file into current session history
 HISTFILE=$GITI_HISTFILE
 history -c # Clear history before reading
-history -r
+[ -r "$HISTFILE" ] && history -r
 
 # Set interactive options
 set +o errexit
