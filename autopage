@@ -26,7 +26,7 @@ if [ -z "$AUTOPAGE_PAGER" ]; then
 fi
 
 # Environment variable validation
-if ! expr "$AUTOPAGE_CUTOFF" : '^[0-9]\+%\?$' >/dev/null; then
+if ! expr "$AUTOPAGE_CUTOFF" : '^[0-9]\{1,\}%\{0,1\}$' >/dev/null; then
 	prints >&2 'Error: $AUTOPAGE_CUTOFF must be a number or percentage'
 	exit 1
 fi
